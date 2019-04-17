@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         restApiInObject("AAPL", "Apple", true, false);
         restApiInObject("GOOGL", "Alphabet (Google)", false, false);
         restApiInObject("FB", "Facebook", false, false);
-        restApiInObject("NOK", "Nokia", false, true);
+        restApiInObject("NOK", "Nokia", false, false);
+        restApiInObject("RHT", "Red Hat", false, false);
+        restApiInObject("INTC", "INTEL", false, true);
 
         Collections.sort(arrayList, new Comparator<String>(){
             public int compare(String str1, String str2){
