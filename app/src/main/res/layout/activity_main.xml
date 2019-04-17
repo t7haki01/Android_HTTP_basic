@@ -1,0 +1,35 @@
+<LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+    <ListView
+        android:layout_weight="0.8"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:hint="Stock name"
+        android:id="@+id/name"
+        android:layout_weight="0.01"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_weight="0.01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:hint="Stock id"
+            android:id="@+id/id"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/addBtn"
+            android:text="ADD"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</LinearLayout>
