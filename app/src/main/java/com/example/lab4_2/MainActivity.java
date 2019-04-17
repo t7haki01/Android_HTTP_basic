@@ -21,6 +21,9 @@ import org.json.JSONObject;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.net.ssl.SSLContext;
 
@@ -39,15 +42,25 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.stock_view);
         final ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(arrayAdapter);
-//        restApi("AAPL", "Apple");
-//        restApi("GOOGL", "Alphabet (Google)");
-//        restApi("FB", "Facebook");
-//        restApi("NOK", "Nokia");
+//        restApi("AAPL", "Apple", true, false);
+//        restApi("GOOGL", "Alphabet (Google)", false, false);
+//        restApi("FB", "Facebook", false, false);
+//        restApi("NOK", "Nokia", false, true);
 
-        restApiInObject("AAPL", "Apple");
+        restApiInObject("AAPL", "Apple", true, false);
+        restApiInObject("GOOGL", "Alphabet (Google)", false, false);
+        restApiInObject("FB", "Facebook", false, false);
+        restApiInObject("NOK", "Nokia", false, true);
+
+        Collections.sort(arrayList, new Comparator<String>(){
+            public int compare(String str1, String str2){
+                return str1.compareTo(str2);
+            }
+        });
     }
 
     private void sslCheck(){
+        /**This is required if android version is low when requesting https request*/
         try {
             ProviderInstaller.installIfNeeded(getApplicationContext());
             SSLContext sslContext;
@@ -60,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void restApiInObject(final String stockId, final String name){
+    private void restApiInObject(final String stockId, final String name, final boolean isStart, final boolean isEnd){
         String url = "https://financialmodelingprep.com/api/company/price/"+ stockId + "?datatype=json";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -68,10 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("Respons", "response" + response.toString());
                         try{
-                            Log.d("Price", "Price: " + response.get("price"));
-                            Log.d("Price", "Price: " + response.get("price"));
+                            if(isStart){
+                                String startComment = "!!From here reqeust JsonObject and concat with String";
+                                arrayList.add(startComment);
+                                callArrayAdater();
+                            }
+                            String price = response.getJSONObject(stockId).get("price").toString();
+                            String result = name + ": " + price + " USD";
+                            arrayList.add(result);
+                            callArrayAdater();
+                            if(isEnd){
+                                Collections.sort(arrayList);
+                            }
                         }catch (JSONException e){
                             e.getLocalizedMessage();
                         }
@@ -83,22 +105,29 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         DemoSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
-
     }
 
-    private void restApi(final String stockId, final String name){
+    private void restApi(final String stockId, final String name, final boolean isStart, final boolean isEnd){
         String url = "https://financialmodelingprep.com/api/company/price/"+ stockId;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        if(isStart){
+                            String startComment = "!From here reqeust string and concat with string";
+                            arrayList.add(startComment);
+                            callArrayAdater();
+                        }
                         int endingBracket = response.indexOf("}", 40);
                         int priceIndex = response.indexOf("price");
                         Log.d("response", "length: " + response.length() + " and index " + response.indexOf("price") + " and text: " + response + " and ending " + endingBracket);
                         String result = name + ": " + response.substring(priceIndex+6, endingBracket-5) + " USD";
                         arrayList.add(result);
                         callArrayAdater();
+                        if(isEnd){
+                            Collections.sort(arrayList);
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
