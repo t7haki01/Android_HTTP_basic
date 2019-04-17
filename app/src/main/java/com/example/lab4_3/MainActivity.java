@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,6 +25,7 @@ import java.lang.reflect.Array;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.net.ssl.SSLContext;
 
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         restApi("GOOGL", "Alphabet (Google)");
         restApi("FB", "Facebook");
         restApi("NOK", "Nokia");
+        restApi("RHT", "Red Hat");
+        restApi("INTC", "INTEL", true);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restApi(final String id, final String name){
-        String url = "https://financialmodelingprep.com/api/company/price/" + id + "?datatype=json";
+        String url = "https://financialmodelingprep.com/api/company/price/" + id.toUpperCase() + "?datatype=json";
+        Toast.makeText(this, "Request sent! Loading....", Toast.LENGTH_SHORT).show();
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try{
-                         String price = response.getJSONObject(id).get("price") + "";
+                         String price = response.getJSONObject(id.toUpperCase()).get("price") + "";
                          textToput = name + ": " + price + " USD";
                          arrayList.add(textToput);
                          callArrayAdapter();
@@ -89,7 +94,41 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle error
+                        Toast.makeText(getApplicationContext(),"Error, Whoops, looks like something went wrong.", Toast.LENGTH_LONG).show();
+                    }
+                });
 
+// Access the RequestQueue through your singleton class.
+        DemoSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
+    private void restApi(final String id, final String name, final boolean isEnd){
+        String url = "https://financialmodelingprep.com/api/company/price/" + id + "?datatype=json";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try{
+                            String price = response.getJSONObject(id).get("price") + "";
+                            textToput = name + ": " + price + " USD";
+                            arrayList.add(textToput);
+                            callArrayAdapter();
+                            if(isEnd){
+                                Collections.sort(arrayList);
+                            }
+                        }catch(JSONException e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Toast.makeText(getApplicationContext(),"Error, Whoops, looks like something went wrong.", Toast.LENGTH_LONG).show();
                     }
                 });
 
