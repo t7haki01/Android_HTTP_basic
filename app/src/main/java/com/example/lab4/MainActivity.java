@@ -36,20 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
     void httpRequest(){
         final TextView textView = this.textView;
-// ...
+        textView.setText("Loading...");
 
-// Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = editText.getText().toString();
+        String url = "Https://" + editText.getText().toString();
 
-
-
-// Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         textView.setText(response);
                     }
                 }, new Response.ErrorListener() {
@@ -59,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-// Add the request to the RequestQueue.
         queue.add(stringRequest);
 
     }
